@@ -5,7 +5,7 @@ import pyspark.sql.functions as F
 import pandas as pd
 
 def corrected_column_names(df):
-    new_columns = [c.strip().replace(' ', '_').lower() for c in df.columns]
+    new_columns = [c.strip().replace(' ', '_').replace('-', '_').lower() for c in df.columns]
     for old, new in zip(df.columns, new_columns):
         df = df.withColumnRenamed(old, new)
     return df

@@ -1,9 +1,9 @@
 # Databricks notebook source
-# MAGIC %run ./read_source.py
+# MAGIC %run ./read_source
 
 # COMMAND ----------
 
-# MAGIC %run ./write_bronze.py
+# MAGIC %run ./write_bronze
 
 # COMMAND ----------
 
@@ -33,27 +33,6 @@ def load_config():
 
 # COMMAND ----------
 
-def write_configs():
-    """Load YAML config from given path"""
-    config_path = "/Volumes/sales_processing/bronze/ingested_data/ingested_paths.yaml"
-    
-    try:
-        with open(config_path, 'r') as file:
-            write_config = yaml.safe_load(file)
-        return config
-    except FileNotFoundError:
-        print(f"Config file not found at: {config_path}")
-        return None
-    except yaml.YAMLError as e:
-        print(f"Error parsing YAML: {e}")
-        return None
-
-# COMMAND ----------
-
-# Import config and read_sources
-#Orders_Path = '/Volumes/sales_processing/bronze/source_datasets/Orders.json'
-#Products_Path = '/Volumes/sales_processing/bronze/source_datasets/Products.csv'
-#Customers_Path = '/Volumes/sales_processing/bronze/source_datasets/Customer.xlsx'
 from pyspark.sql import DataFrame
 
 class MainPipeline:
@@ -88,24 +67,25 @@ class MainPipeline:
     
     def write(self, read_orders_df, read_products_df, read_customers_df):
         orders_path = self.config['paths']['orders']
+        print(orders_path)
         products_path = self.config['paths']['products']
         customers_path = self.config['paths']['customers']
 
         # Read Orders
-        write_orders(read_orders_df, orders_path)
+        orders_df = write_orders(read_orders_df, orders_path)
         if spark.catalog.tableExists('sales_processing.bronze.orders'):
             if not spark.table('sales_processing.bronze.orders').isEmpty():
                 print('Orders Bronze Table written successfully!')
 
         # Read Products
-        products_df = write_products(read_orders_df, products_path)
+        products_df = write_products(read_products_df, products_path)
         if spark.catalog.tableExists('sales_processing.bronze.products'):
             if not spark.table('sales_processing.bronze.products').isEmpty():
                 print('Products Bronze Table written successfully!')
         
 
         # Read Customers
-        customers_df = write_customers(read_orders_df, customers_path)
+        customers_df = write_customers(read_customers_df, customers_path)
         if spark.catalog.tableExists('sales_processing.bronze.customers'):
             if not spark.table('sales_processing.bronze.customers').isEmpty():
                 print('Customers Bronze Table written successfully!')
@@ -120,6 +100,13 @@ if __name__ == "__main__":
     pipeline = MainPipeline(config)
     orders_df,products_df,customers_df = pipeline.read()
 
-    write_config = write_configs()
     pipeline.write(orders_df,products_df,customers_df)
 
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC drop table sales_processing.bronze.customers;
+# MAGIC drop table sales_processing.bronze.products;
+# MAGIC drop table sales_processing.bronze.orders;
+# MAGIC
