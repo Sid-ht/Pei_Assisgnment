@@ -17,7 +17,7 @@ def round_profits(df:DataFrame)-> DataFrame:
     return round_profit_orders_df
 
 def silver_order_write(df: DataFrame):
-    round_profits(orders_df).select('customer_id','product_id','year').write.format("delta") \
+    round_profits(orders_df).select('customer_id','product_id','year','profit').write.format("delta") \
     .mode("overwrite") \
     .saveAsTable("sales_processing.silver.orders")
 
