@@ -10,15 +10,11 @@ class MainPipeline:
     function to read all bronze and write to silver after transforming.
     """    
     # Enrich Bronze table and write to Silver table
-    def silver_products(self,products_df):
-        silver_products_write(products_df)
-
-    def silver_orders(self,orders_df):
-        silver_order_write(orders_df)
-
-    def silver_customers(self,customers_df):
-        silver_customers_write(customers_df)
-
+    def agg(self,orders_df,products_df,customers_df):
+        display(agg_by_year(orders_df))
+        display(agg_by_category(orders_df,products_df))
+        display(agg_by_sub_category(orders_df,products_df))
+        display(agg_by_customer(orders_df,customers_df))
 
 # main
 if __name__ == "__main__":
@@ -41,4 +37,4 @@ if __name__ == "__main__":
     
     pipeline = MainPipeline()
 
-    pipeline.agg()
+    pipeline.agg(orders_df,products_df,customers_df)
