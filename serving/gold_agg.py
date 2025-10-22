@@ -3,6 +3,9 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
 def agg_by_year(silver_df: DataFrame)-> DataFrame:
+    """
+    Aggregation of profit based on year.
+    """
     try:
         agg_df = silver_df.groupBy(F.col('year')).agg(F.sum('profit').alias('year_wise_profit'))
         print("profit aggregation per year basis done")
@@ -12,6 +15,9 @@ def agg_by_year(silver_df: DataFrame)-> DataFrame:
         raise
 
 def agg_by_category(silver_df: DataFrame, silver_df2: DataFrame )-> DataFrame:
+    """
+    Aggregation of profit based on category.
+    """
     try:
         agg_df = silver_df.join(silver_df2, on ='product_id').groupBy(F.col('category')).agg(F.sum('profit').alias('category_wise_profit'))
         print("profit aggregation per category basis done")
@@ -21,6 +27,9 @@ def agg_by_category(silver_df: DataFrame, silver_df2: DataFrame )-> DataFrame:
         raise
 
 def agg_by_sub_category(silver_df: DataFrame, silver_df2: DataFrame )-> DataFrame:
+    """
+    Aggregation of profit based on sub_category.
+    """
     try:
         agg_df = silver_df.join(silver_df2, on ='product_id').groupBy(F.col('sub_category')).agg(F.sum('profit').alias('sub_category_wise_profit'))
         print("profit aggregation per sub_category basis done")
@@ -30,6 +39,9 @@ def agg_by_sub_category(silver_df: DataFrame, silver_df2: DataFrame )-> DataFram
         raise
 
 def agg_by_customer(silver_df: DataFrame, silver_df2: DataFrame )-> DataFrame:
+    """
+    Aggregation of profit based on customer.
+    """
     try:
         agg_df = silver_df.join(silver_df2, on ='customer_id').groupBy(F.col('customer_id'), F.col('customer_name')).agg(F.sum('profit').alias('customer_wise_profit'))
         print("profit aggregation per category basis done")

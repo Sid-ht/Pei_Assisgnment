@@ -66,32 +66,37 @@ class MainPipeline:
 
     
     def write(self, read_orders_df, read_products_df, read_customers_df):
-        orders_path = self.config['paths']['orders']
-        print(orders_path)
-        products_path = self.config['paths']['products']
-        customers_path = self.config['paths']['customers']
+        try:
+            # Read Order
+            orders_df = write_orders(read_orders_df)
+            if spark.catalog.tableExists('sales_processing.bronze.orders'):
+                if not spark.table('sales_processing.bronze.orders').isEmpty():
+                    print('Orders Bronze Table written successfully!')
+                else:
+                    print('Orders Bronze Table not written successfully!')
 
-        # Read Orders
-        orders_df = write_orders(read_orders_df, orders_path)
-        if spark.catalog.tableExists('sales_processing.bronze.orders'):
-            if not spark.table('sales_processing.bronze.orders').isEmpty():
-                print('Orders Bronze Table written successfully!')
-
-        # Read Products
-        products_df = write_products(read_products_df, products_path)
-        if spark.catalog.tableExists('sales_processing.bronze.products'):
-            if not spark.table('sales_processing.bronze.products').isEmpty():
-                print('Products Bronze Table written successfully!')
+            # Read Products
+            products_df = write_products(read_products_df)
+            if spark.catalog.tableExists('sales_processing.bronze.products'):
+                if not spark.table('sales_processing.bronze.products').isEmpty():
+                    print('Products Bronze Table written successfully!')
+                else:
+                    print('Orders Bronze Table not written successfully!')
         
 
-        # Read Customers
-        customers_df = write_customers(read_customers_df, customers_path)
-        if spark.catalog.tableExists('sales_processing.bronze.customers'):
-            if not spark.table('sales_processing.bronze.customers').isEmpty():
-                print('Customers Bronze Table written successfully!')
+            # Read Customers
+            customers_df = write_customers(read_customers_df)
+            if spark.catalog.tableExists('sales_processing.bronze.customers'):
+                if not spark.table('sales_processing.bronze.customers').isEmpty():
+                    print('Customers Bronze Table written successfully!')
+                else:
+                    print('Orders Bronze Table not written successfully!')
 
-        print("All bronze tables created.")
-
+            print("All bronze tables created.")
+        
+        except Exception as e:
+            print(f"Error writing sources: {e}")
+            raise e
 
 # Ensure main runs if executed directly
 if __name__ == "__main__":

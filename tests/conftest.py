@@ -1,4 +1,8 @@
 # Databricks notebook source
+# MAGIC %run ../serving/gold_agg
+
+# COMMAND ----------
+
 import pytest
 from pyspark.sql import SparkSession
 
